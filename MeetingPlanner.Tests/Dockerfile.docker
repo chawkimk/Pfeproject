@@ -1,0 +1,18 @@
+# Base image for building and testing .NET Core applications
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /src
+
+# Copy solution and project files
+COPY MeetingPlanner.sln ./
+COPY MeetingPlanner/MeetingPlanner.csproj MeetingPlanner/
+COPY MeetingPlanner.Tests/MeetingPlanner.Tests.csproj MeetingPlanner.Tests/
+RUN dotnet restore MeetingPlanner.Tests/MeetingPlanner.Tests.csproj
+
+# Copy all files and build the test project
+COPY MeetingPlanner/ MeetingPlanner/
+COPY MeetingPlanner.Tests/ MeetingPlanner.Tests/
+WORKDIR /src/MeetingPlanner.Tests
+RUN dotnet build -c Release
+
+# Run tests
+CMD ["dotnet", "test", "--no-build", "--verbosity:normal"]

@@ -1,0 +1,30 @@
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /src
+
+# Install Node.js for front-end dependencies
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs
+
+# Copy the project files
+COPY MeetingPlanner.sln ./
+COPY MeetingPlanner/MeetingPlanner.csproj MeetingPlanner/
+RUN dotnet restore MeetingPlanner/MeetingPlanner.csproj
+
+# Copy the rest of the files
+COPY MeetingPlanner/ MeetingPlanner/
+WORKDIR /src/MeetingPlanner
+
+# Run npm install if necessary
+RUN npm install --prefix ClientApp
+
+
+# Build the application
+RUN dotnet publish -c Release -o /app/publish
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 5000
+ENTRYPOINT ["dotnet", "MeetingPlanner.dll"]

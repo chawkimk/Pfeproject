@@ -1,0 +1,49 @@
+<mat-card>
+  <div class="fields-wrapper" [formGroup]="form" *ngIf="form">
+
+    <app-input class="field" [form]="form" [controlName]="'title'" [required]="true"
+               [placeholderToTranslate]="'event.title'">
+    </app-input>
+
+    <app-date-input class="field" [form]="form" [controlName]="'date'" [required]="true"
+                    [placeholderToTranslate]="'event.date'" [chosenDate]="chosenDate">
+    </app-date-input>
+
+    <app-time-input class="field" [form]="form"
+                    placeholder="{{ 'event.hourFrom' | translate | capitalize }}"
+                    [controlName]="'hourFrom'">
+    </app-time-input>
+
+    <app-time-input *ngIf="form?.get('hourFrom').value"
+                    class="field" [form]="form"
+                    placeholder="{{ 'event.hourTo' | translate | capitalize }}"
+                    [controlName]="'hourTo'">
+    </app-time-input>
+
+    <app-checkbox *ngIf="!isGlobal" class="field" [form]="form" (isChecked)="onGlobalChange($event)"
+                  [controlName]="'global'" [placeholderToTranslate]="'event.global'">
+    </app-checkbox>
+
+    <app-input class="field field--wider" [form]="form" [controlName]="'description'"
+               [placeholderToTranslate]="'event.description'" [type]="textArea" [maxLength]="10000">
+    </app-input>
+
+  </div>
+
+  <app-event-notifications *ngIf="!isGlobal && !form?.get('global').value"
+                           [event]="event" [formGroup]="form">
+  </app-event-notifications>
+
+  <div class="mt-3">
+    <button role="button" mat-raised-button color="primary"
+            (click)="isEditMode ? updateEvent() : addEvent()"
+            [disabled]="form.invalid" id="saveButton">
+      {{ 'buttons.save'| translate | capitalize }}
+    </button>
+
+    <button role="button" class="ml-2" mat-raised-button color="basic"
+            id="cancelButton" (click)="goBack()">
+      {{ 'buttons.cancel'| translate | capitalize }}
+    </button>
+  </div>
+</mat-card>

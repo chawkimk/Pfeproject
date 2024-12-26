@@ -1,0 +1,21 @@
+# Use the official Node.js image
+FROM node:14
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package and lock files to install dependencies
+COPY package*.json ./
+
+# Install dependencie
+
+# Copy the rest of the application files
+COPY . .
+
+# Expose the port used by `ng serve`
+EXPOSE 4200
+
+RUN npm install
+
+# Run the application using Angular CLI's `ng serve`
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "4200"]
